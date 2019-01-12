@@ -36,10 +36,16 @@ func (h callbackHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		case "select":
 			messageText := fmt.Sprintf("Participants: <@%s>", action.SelectedOptions[0].Value)
 			sendResponse(w, formatActionMessageResponse(message, messageText, postSelectUserAttachText, selectActions))
+			return
+		case "additional_user":
+			messageText := fmt.Sprintf("Participants: %s, <@%s>", message.Text[13:], action.SelectedOptions[0].Value)
+			sendResponse(w, formatActionMessageResponse(message, messageText, "", selectActions))
+			return
 		case "cancel":
 			respMsg.DeleteOriginal = true
 			respMsg.Text = requestCancelledText
 			sendResponse(w, respMsg)
+			return
 		}
 	}
 
