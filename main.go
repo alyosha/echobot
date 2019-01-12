@@ -1,15 +1,12 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 	"os"
-	"time"
 
 	"github.com/kelseyhightower/envconfig"
 	"github.com/nlopes/slack"
-	cache "github.com/patrickmn/go-cache"
 )
 
 type config struct {
@@ -24,10 +21,10 @@ func main() {
 }
 
 func _main() int {
-	fmt.Print("startup")
+	log.Print("Starting up")
 	var env config
 	if err := envconfig.Process("", &env); err != nil {
-		log.Printf("Failed to process env var: %s", err)
+		log.Printf("Error processing environment variables: %s", err)
 		return 1
 	}
 
@@ -39,12 +36,9 @@ func _main() int {
 
 	go slackHandler.listen()
 
-	cache := cache.New(10*time.Minute, 30*time.Minute)
-
 	http.Handle("/callback", callbackHandler{
 		slackClient:   slackClient,
 		signingSecret: env.SigningSecret,
-		cache:         cache,
 	})
 
 	log.Printf("Server listening on :%s", env.Port)

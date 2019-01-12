@@ -10,13 +10,11 @@ import (
 	"net/url"
 
 	"github.com/nlopes/slack"
-	"github.com/patrickmn/go-cache"
 )
 
 type callbackHandler struct {
 	slackClient   *slack.Client
 	signingSecret string
-	cache         *cache.Cache
 }
 
 func (h callbackHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -53,7 +51,6 @@ func (h callbackHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 }
 func verifyMessage(req *http.Request, signingSecret string) (verifiedBody *slack.AttachmentActionCallback, err error) {
-	fmt.Print("hi")
 	if req.Method != http.MethodPost {
 		log.Printf("Invalid method: %s, want POST", req.Method)
 		return nil, err
@@ -79,13 +76,13 @@ func verifyMessage(req *http.Request, signingSecret string) (verifiedBody *slack
 
 	jsonBody, err := url.QueryUnescape(buf.String()[8:])
 	if err != nil {
-		log.Printf("Failed to unespace request body: %s", err)
+		log.Printf("Error unescaping request body: %s", err)
 		return
 	}
 
 	var message *slack.AttachmentActionCallback
 	if err := json.Unmarshal([]byte(jsonBody), &message); err != nil {
-		log.Printf("Failed to decode json message from slack: %s", err)
+		log.Printf("Error decoding JSON message from Slack: %s", err)
 		return nil, err
 	}
 
