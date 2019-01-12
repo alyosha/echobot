@@ -4,6 +4,8 @@ As a basic example of how interactive message lifecycles work on Slack, this ske
 
 Read more about interactive messages here: https://api.slack.com/interactive-messages
 
+Feedback/suggestions welcome. 
+
 # Setup
 
 Getting the bot up and running is simple and the steps are as described below: 
