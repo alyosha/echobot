@@ -12,10 +12,6 @@ import (
 	cache "github.com/patrickmn/go-cache"
 )
 
-var countryList = map[string]string{
-	"Japan": "Asia/Tokyo",
-}
-
 type config struct {
 	Port          string `envconfig:"PORT" default:"3000"`
 	SigningSecret string `envconfig:"SIGNING_SECRET" required:"true"`
