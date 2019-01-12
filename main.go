@@ -16,7 +16,7 @@ type config struct {
 	Port          string `envconfig:"PORT" default:"3000"`
 	SigningSecret string `envconfig:"SIGNING_SECRET" required:"true"`
 	BotToken      string `envconfig:"BOT_TOKEN" required:"true"`
-	BotID         string `envconfig:"BOT_ID" required:"true"`
+	BotID         string `envconfig:"BOT_ID"`
 }
 
 func main() {

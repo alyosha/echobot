@@ -23,6 +23,9 @@ func (s *slackHandler) listen() {
 	for msg := range rtm.IncomingEvents {
 		switch event := msg.Data.(type) {
 		case *slack.MessageEvent:
+			if s.botID == "" {
+				log.Printf("Received the following message: %s", event.Msg.Text)
+			}
 			m := strings.Split(strings.TrimSpace(event.Msg.Text), " ")[0:]
 			if len(m) != 0 && m[0] == fmt.Sprintf("<@%s>", s.botID) {
 				if _, err := s.postMessage(startMessage, event.Channel); err != nil {
