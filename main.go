@@ -37,7 +37,6 @@ func _main() int {
 	go slackHandler.listen()
 
 	http.Handle("/callback", callbackHandler{
-		slackClient:   slackClient,
 		signingSecret: env.SigningSecret,
 	})
 

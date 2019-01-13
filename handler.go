@@ -13,7 +13,6 @@ import (
 )
 
 type callbackHandler struct {
-	slackClient   *slack.Client
 	signingSecret string
 }
 
