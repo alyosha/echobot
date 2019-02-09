@@ -30,12 +30,12 @@ func _main() int {
 	}
 
 	slackClient := slack.New(env.BotToken)
-	slackHandler := &listener{
+	listener := &listener{
 		client: slackClient,
 		botID:  env.BotID,
 	}
 
-	go slackHandler.listen()
+	go listener.listen()
 
 	r := chi.NewRouter()
 	r.Use(func(h http.Handler) http.Handler {

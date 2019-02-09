@@ -12,32 +12,13 @@ import (
 )
 
 func verifyCallbackMsg(r *http.Request) (verifiedBody *slack.AttachmentActionCallback, err error) {
-	signingSecret, err := getSigningSecret(r.Context())
-	if err != nil {
-		log.Printf("failed to verify message: %s", err)
-		return nil, err
-	}
-
 	if r.Method != http.MethodPost {
 		log.Printf("invalid method: %s, want POST", r.Method)
 		return nil, err
 	}
 
-	sv, err := slack.NewSecretsVerifier(r.Header, signingSecret)
+	buf, err := checkSecretAndWriteBody(r)
 	if err != nil {
-		log.Printf("error initializing new SecretsVerifier: %s", err)
-		return nil, err
-	}
-
-	var buf bytes.Buffer
-	dest := io.MultiWriter(&buf, &sv)
-	if _, err := io.Copy(dest, r.Body); err != nil {
-		log.Printf("error writing body to SecretsVerifier: %s", err)
-		return nil, err
-	}
-
-	if err := sv.Ensure(); err != nil {
-		log.Printf("invalid signing secret: %s", err)
 		return nil, err
 	}
 
@@ -56,33 +37,14 @@ func verifyCallbackMsg(r *http.Request) (verifiedBody *slack.AttachmentActionCal
 	return msg, nil
 }
 
-func verifySlashCommand(req *http.Request) (verifiedBody *slack.SlashCommand, err error) {
-	signingSecret, err := getSigningSecret(req.Context())
+func verifySlashCommand(r *http.Request) (verifiedBody *slack.SlashCommand, err error) {
+	if r.Method != http.MethodPost {
+		log.Printf("invalid method: %s, want POST", r.Method)
+		return nil, err
+	}
+
+	buf, err := checkSecretAndWriteBody(r)
 	if err != nil {
-		log.Printf("failed to extract signing secret from context %s", err)
-		return nil, err
-	}
-
-	if req.Method != http.MethodPost {
-		log.Printf("invalid method: %s, want POST", req.Method)
-		return nil, err
-	}
-
-	sv, err := slack.NewSecretsVerifier(req.Header, signingSecret)
-	if err != nil {
-		log.Printf("error initializing new SecretsVerifier: %s", err)
-		return nil, err
-	}
-
-	var buf bytes.Buffer
-	dest := io.MultiWriter(&buf, &sv)
-	if _, err := io.Copy(dest, req.Body); err != nil {
-		log.Printf("error writing body to SecretsVerifier: %s", err)
-		return nil, err
-	}
-
-	if err := sv.Ensure(); err != nil {
-		log.Printf("invalid signing secret: %s", err)
 		return nil, err
 	}
 
@@ -95,6 +57,34 @@ func verifySlashCommand(req *http.Request) (verifiedBody *slack.SlashCommand, er
 	msg := parseCommand(body)
 
 	return &msg, nil
+}
+
+func checkSecretAndWriteBody(r *http.Request) (bytes.Buffer, error) {
+	var buf bytes.Buffer
+	signingSecret, err := getSigningSecret(r.Context())
+	if err != nil {
+		log.Printf("failed to extract signing secret from context %s", err)
+		return buf, err
+	}
+
+	sv, err := slack.NewSecretsVerifier(r.Header, signingSecret)
+	if err != nil {
+		log.Printf("error initializing new SecretsVerifier: %s", err)
+		return buf, err
+	}
+
+	dest := io.MultiWriter(&buf, &sv)
+	if _, err := io.Copy(dest, r.Body); err != nil {
+		log.Printf("error writing body to SecretsVerifier: %s", err)
+		return buf, err
+	}
+
+	if err := sv.Ensure(); err != nil {
+		log.Printf("invalid signing secret: %s", err)
+		return buf, err
+	}
+
+	return buf, nil
 }
 
 func parseCommand(body url.Values) (s slack.SlashCommand) {
