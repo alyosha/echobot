@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/go-chi/chi"
 	"github.com/kelseyhightower/envconfig"
 	"github.com/nlopes/slack"
 )
@@ -36,12 +37,21 @@ func _main() int {
 
 	go slackHandler.listen()
 
-	http.Handle("/callback", callbackHandler{
-		signingSecret: env.SigningSecret,
+	r := chi.NewRouter()
+	r.Use(func(h http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			ctx := withContext(r.Context(), env.SigningSecret, slackClient)
+			h.ServeHTTP(w, r.WithContext(ctx))
+		})
+	})
+
+	r.Route("/", func(r chi.Router) {
+		r.Post("/callback", callback)
+		r.Post("/help", help)
 	})
 
 	log.Printf("server listening on :%s", env.Port)
-	if err := http.ListenAndServe(":"+env.Port, nil); err != nil {
+	if err := http.ListenAndServe(":"+env.Port, r); err != nil {
 		log.Printf("error: %s", err)
 		return 1
 	}

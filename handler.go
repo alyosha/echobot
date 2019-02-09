@@ -7,14 +7,10 @@ import (
 	"github.com/nlopes/slack"
 )
 
-type callbackHandler struct {
-	signingSecret string
-}
-
-func (h callbackHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func callback(w http.ResponseWriter, r *http.Request) {
 	var respMsg slack.Message
 
-	verifiedBody, err := verifyMsg(r, h.signingSecret)
+	verifiedBody, err := verifyCallbackMsg(r)
 	if err != nil {
 		return
 	}
@@ -42,5 +38,17 @@ func (h callbackHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	sendResp(w, respMsg)
+}
 
+func help(w http.ResponseWriter, r *http.Request) {
+	var respMsg slack.Message
+
+	_, err := verifySlashCommand(r)
+	if err != nil {
+		return
+	}
+
+	respMsg.Text = "Set up a help message for users at this endpoint"
+
+	sendResp(w, respMsg)
 }
