@@ -10,11 +10,11 @@ const (
 
 type message struct {
 	attachments []slack.Attachment
-	messageBody string
+	body        string
 }
 
 // Sample response message featuring two interactive actions
-var startMessage = message{
+var startMsg = message{
 	attachments: []slack.Attachment{
 		{
 			Text:       "Who will be participating?",
@@ -35,7 +35,7 @@ var startMessage = message{
 			},
 		},
 	},
-	messageBody: "Let's get started!",
+	body: "Let's get started!",
 }
 
 var selectActions = []slack.AttachmentAction{
@@ -52,11 +52,11 @@ var selectActions = []slack.AttachmentAction{
 	},
 }
 
-func formatActionMessageResponse(originalMessage slack.Message, messageText string, attachText string, actions []slack.AttachmentAction) slack.Message {
-	originalMessage.ReplaceOriginal = true
-	originalMessage.Text = messageText
-	originalMessage.Attachments[0].Text = attachText
-	originalMessage.Attachments[0].Actions = actions
+func fmtActionMsgResp(originalMsg slack.Message, msgText string, attachText string, actions []slack.AttachmentAction) slack.Message {
+	originalMsg.ReplaceOriginal = true
+	originalMsg.Text = msgText
+	originalMsg.Attachments[0].Text = attachText
+	originalMsg.Attachments[0].Actions = actions
 
-	return originalMessage
+	return originalMsg
 }

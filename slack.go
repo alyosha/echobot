@@ -6,16 +6,15 @@ import (
 	"strings"
 
 	"github.com/nlopes/slack"
-	"github.com/pkg/errors"
 )
 
-type slackHandler struct {
+type listener struct {
 	client *slack.Client
 	botID  string
 }
 
 // listen waits for message events
-func (s *slackHandler) listen() {
+func (s *listener) listen() {
 	rtm := s.client.NewRTM()
 
 	go rtm.ManageConnection()
@@ -26,9 +25,8 @@ func (s *slackHandler) listen() {
 			if s.botID == "" {
 				log.Printf("received the following message: %s", event.Msg.Text)
 			}
-			msg := strings.Split(strings.TrimSpace(event.Msg.Text), " ")[0:]
-			if len(msg) != 0 && msg[0] == fmt.Sprintf("<@%s>", s.botID) {
-				if _, err := s.postMessage(startMessage, event.Channel); err != nil {
+			if s.isValidMsg(event) {
+				if _, err := s.postMsg(startMsg, event.Channel); err != nil {
 					log.Printf("problem handling message event: %s", err)
 				}
 			}
@@ -36,15 +34,19 @@ func (s *slackHandler) listen() {
 	}
 }
 
-// postMessage sends the message provided in the method params to the channel designated
-func (s *slackHandler) postMessage(msg message, channel string) (timestamp string, err error) {
-	params := slack.PostMessageParameters{
-		Attachments: msg.attachments,
+func (s *listener) isValidMsg(event *slack.MessageEvent) bool {
+	if s.botID == "" {
+		log.Printf("received the following message: %s", event.Msg.Text)
+		return false
 	}
-	_, ts, err := s.client.PostMessage(channel, msg.messageBody, params)
-	if err != nil {
-		return "", errors.Wrap(err, "failed to post message to Slack")
+	msg := splitMsg(event.Msg.Text)
+	if len(msg) == 0 || msg[0] != fmt.Sprintf("<@%s>", s.botID) {
+		return false
 	}
 
-	return ts, nil
+	return true
+}
+
+func splitMsg(msg string) []string {
+	return strings.Split(strings.TrimSpace(msg), " ")[0:]
 }

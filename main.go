@@ -29,7 +29,7 @@ func _main() int {
 	}
 
 	slackClient := slack.New(env.BotToken)
-	slackHandler := &slackHandler{
+	slackHandler := &listener{
 		client: slackClient,
 		botID:  env.BotID,
 	}
