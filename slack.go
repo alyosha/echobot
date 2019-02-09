@@ -22,9 +22,6 @@ func (s *listener) listen() {
 	for msg := range rtm.IncomingEvents {
 		switch event := msg.Data.(type) {
 		case *slack.MessageEvent:
-			if s.botID == "" {
-				log.Printf("received the following message: %s", event.Msg.Text)
-			}
 			if s.isValidMsg(event) {
 				if _, err := s.postMsg(startMsg, event.Channel); err != nil {
 					log.Printf("problem handling message event: %s", err)
