@@ -10,10 +10,9 @@ import (
 
 // postMsg sends the message provided in the method params to the channel designated
 func (s *listener) postMsg(msg message, channel string) (timestamp string, err error) {
-	params := slack.PostMessageParameters{
-		Attachments: msg.attachments,
-	}
-	_, ts, err := s.client.PostMessage(channel, msg.body, params)
+	attachments := slack.MsgOptionAttachments(msg.attachments...)
+	body := slack.MsgOptionText(msg.body, true)
+	_, ts, err := s.client.PostMessage(channel, body, attachments)
 	if err != nil {
 		return "", errors.Wrap(err, "failed to post message to Slack")
 	}
