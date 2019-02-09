@@ -19,24 +19,24 @@ type callbackHandler struct {
 func (h callbackHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	var respMsg slack.Message
 
-	msg, err := verifyMessage(r, h.signingSecret)
+	verifiedBody, err := verifyMessage(r, h.signingSecret)
 	if err != nil {
 		return
 	}
 
-	message, callbackID := msg.OriginalMessage, msg.CallbackID
+	msg, callbackID := verifiedBody.OriginalMessage, verifiedBody.CallbackID
 
 	switch callbackID {
 	case userInputID:
-		action := msg.Actions[0]
+		action := verifiedBody.Actions[0]
 		switch action.Name {
 		case "select":
 			messageText := fmt.Sprintf("Participants: <@%s>", action.SelectedOptions[0].Value)
-			sendResponse(w, formatActionMessageResponse(message, messageText, postSelectUserAttachText, selectActions))
+			sendResponse(w, formatActionMessageResponse(msg, messageText, postSelectUserAttachText, selectActions))
 			return
 		case "additional_user":
-			messageText := fmt.Sprintf("Participants: %s, <@%s>", message.Text[13:], action.SelectedOptions[0].Value)
-			sendResponse(w, formatActionMessageResponse(message, messageText, "", selectActions))
+			messageText := fmt.Sprintf("Participants: %s, <@%s>", msg.Text[13:], action.SelectedOptions[0].Value)
+			sendResponse(w, formatActionMessageResponse(msg, messageText, "", selectActions))
 			return
 		case "cancel":
 			respMsg.DeleteOriginal = true
@@ -51,46 +51,46 @@ func (h callbackHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 func verifyMessage(req *http.Request, signingSecret string) (verifiedBody *slack.AttachmentActionCallback, err error) {
 	if req.Method != http.MethodPost {
-		log.Printf("Invalid method: %s, want POST", req.Method)
+		log.Printf("invalid method: %s, want POST", req.Method)
 		return nil, err
 	}
 
 	sv, err := slack.NewSecretsVerifier(req.Header, signingSecret)
 	if err != nil {
-		log.Printf("Error initializing new SecretsVerifier: %s", err)
+		log.Printf("error initializing new SecretsVerifier: %s", err)
 		return nil, err
 	}
 
 	var buf bytes.Buffer
 	dest := io.MultiWriter(&buf, &sv)
 	if _, err := io.Copy(dest, req.Body); err != nil {
-		log.Printf("Error writing body to SecretsVerifier: %s", err)
+		log.Printf("error writing body to SecretsVerifier: %s", err)
 		return nil, err
 	}
 
 	if err := sv.Ensure(); err != nil {
-		log.Printf("Invalid signing secret: %s", err)
+		log.Printf("invalid signing secret: %s", err)
 		return nil, err
 	}
 
 	jsonBody, err := url.QueryUnescape(buf.String()[8:])
 	if err != nil {
-		log.Printf("Error unescaping request body: %s", err)
+		log.Printf("error unescaping request body: %s", err)
 		return
 	}
 
-	var message *slack.AttachmentActionCallback
-	if err := json.Unmarshal([]byte(jsonBody), &message); err != nil {
-		log.Printf("Error decoding JSON message from Slack: %s", err)
+	var msg *slack.AttachmentActionCallback
+	if err := json.Unmarshal([]byte(jsonBody), &msg); err != nil {
+		log.Printf("error decoding JSON message from Slack: %s", err)
 		return nil, err
 	}
 
-	return message, nil
+	return msg, nil
 }
 
-func sendResponse(w http.ResponseWriter, message slack.Message) {
+func sendResponse(w http.ResponseWriter, msg slack.Message) {
 	w.Header().Add("Content-type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(&message)
+	json.NewEncoder(w).Encode(&msg)
 	return
 }

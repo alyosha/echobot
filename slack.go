@@ -24,12 +24,12 @@ func (s *slackHandler) listen() {
 		switch event := msg.Data.(type) {
 		case *slack.MessageEvent:
 			if s.botID == "" {
-				log.Printf("Received the following message: %s", event.Msg.Text)
+				log.Printf("received the following message: %s", event.Msg.Text)
 			}
-			m := strings.Split(strings.TrimSpace(event.Msg.Text), " ")[0:]
-			if len(m) != 0 && m[0] == fmt.Sprintf("<@%s>", s.botID) {
+			msg := strings.Split(strings.TrimSpace(event.Msg.Text), " ")[0:]
+			if len(msg) != 0 && msg[0] == fmt.Sprintf("<@%s>", s.botID) {
 				if _, err := s.postMessage(startMessage, event.Channel); err != nil {
-					log.Printf("Problem handling message event: %s", err)
+					log.Printf("problem handling message event: %s", err)
 				}
 			}
 		}
@@ -43,7 +43,7 @@ func (s *slackHandler) postMessage(msg message, channel string) (timestamp strin
 	}
 	_, ts, err := s.client.PostMessage(channel, msg.messageBody, params)
 	if err != nil {
-		return "", errors.Wrap(err, "Failed to post message to Slack")
+		return "", errors.Wrap(err, "failed to post message to Slack")
 	}
 
 	return ts, nil

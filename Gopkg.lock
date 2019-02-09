@@ -29,14 +29,6 @@
   version = "v0.4.0"
 
 [[projects]]
-  digest = "1:808cdddf087fb64baeae67b8dfaee2069034d9704923a3cb8bd96a995421a625"
-  name = "github.com/patrickmn/go-cache"
-  packages = ["."]
-  pruneopts = "UT"
-  revision = "a3647f8e31d79543b2d0f0ae2fe5c379d72cedc0"
-  version = "v2.1.0"
-
-[[projects]]
   digest = "1:cf31692c14422fa27c83a05292eb5cbe0fb2775972e8f1f8446a71549bd8980b"
   name = "github.com/pkg/errors"
   packages = ["."]
@@ -50,7 +42,6 @@
   input-imports = [
     "github.com/kelseyhightower/envconfig",
     "github.com/nlopes/slack",
-    "github.com/patrickmn/go-cache",
     "github.com/pkg/errors",
   ]
   solver-name = "gps-cdcl"

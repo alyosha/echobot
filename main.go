@@ -21,10 +21,10 @@ func main() {
 }
 
 func _main() int {
-	log.Print("Starting up")
+	log.Print("starting up")
 	var env config
 	if err := envconfig.Process("", &env); err != nil {
-		log.Printf("Error processing environment variables: %s", err)
+		log.Printf("error processing environment variables: %s", err)
 		return 1
 	}
 
@@ -40,9 +40,9 @@ func _main() int {
 		signingSecret: env.SigningSecret,
 	})
 
-	log.Printf("Server listening on :%s", env.Port)
+	log.Printf("server listening on :%s", env.Port)
 	if err := http.ListenAndServe(":"+env.Port, nil); err != nil {
-		log.Printf("Error: %s", err)
+		log.Printf("error: %s", err)
 		return 1
 	}
 
