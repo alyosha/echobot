@@ -6,6 +6,9 @@ const (
 	postSelectUserAttachText = "Okay, need at least one more participant!"
 	requestCancelledText     = "Request cancelled!"
 	userInputID              = "user_input"
+	selectAction             = "select"
+	additionalUserAction     = "additional_user"
+	cancelAction             = "cancel"
 )
 
 type message struct {
@@ -22,12 +25,12 @@ var startMsg = message{
 			CallbackID: userInputID,
 			Actions: []slack.AttachmentAction{
 				{
-					Name:       "select",
+					Name:       selectAction,
 					Type:       "select",
 					DataSource: "users",
 				},
 				{
-					Name:  "cancel",
+					Name:  cancelAction,
 					Text:  "Cancel",
 					Type:  "button",
 					Style: "danger",
@@ -40,12 +43,12 @@ var startMsg = message{
 
 var selectActions = []slack.AttachmentAction{
 	{
-		Name:       "additional_user",
+		Name:       additionalUserAction,
 		Type:       "select",
 		DataSource: "users",
 	},
 	{
-		Name:  "cancel",
+		Name:  cancelAction,
 		Text:  "Cancel",
 		Type:  "button",
 		Style: "danger",

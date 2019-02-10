@@ -21,15 +21,15 @@ func callback(w http.ResponseWriter, r *http.Request) {
 	case userInputID:
 		action := verifiedBody.Actions[0]
 		switch action.Name {
-		case "select":
+		case selectAction:
 			messageText := fmt.Sprintf("Participants: <@%s>", action.SelectedOptions[0].Value)
 			sendResp(w, fmtActionMsgResp(msg, messageText, postSelectUserAttachText, selectActions))
 			return
-		case "additional_user":
+		case additionalUserAction:
 			messageText := fmt.Sprintf("Participants: %s, <@%s>", msg.Text[13:], action.SelectedOptions[0].Value)
 			sendResp(w, fmtActionMsgResp(msg, messageText, "", selectActions))
 			return
-		case "cancel":
+		case cancelAction:
 			respMsg.DeleteOriginal = true
 			respMsg.Text = requestCancelledText
 			sendResp(w, respMsg)
