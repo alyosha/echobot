@@ -1,6 +1,8 @@
 # echobot
 
-A basic example of how Slack's interactive message lifecycles work, this skeleton app responds to mentions with a message containing an interactive menu and button. Out of the box it simply allows users to select "participants" for a fictional event, and there is no validation to ensure a member is not selected more than once, etc.
+A basic example of how Slack's interactive messaging works, this skeleton app responds to self-mentions with a message containing an interactive menu and button. Out of the box it simply allows users to select "participants" for a fictional event, and there is no validation to ensure a member is not selected more than once, etc.
+
+The purpose of this repo is to reduce boilerplate when starting up a new Slackbot project. Build on/change the existing response logic to create your own personal interactive message flow. 
 
 In my projects I always configure help flows via slash command. I find that slash commands are more helpful than RTM in this regard in that, if the user forgets the help command itself, they can easily remind themselves by looking at the bot's profile page. `echobot` comes with a pre-configured `help` endpoint which can be used after setting up a new slash command on the [Slack API dashboard](https://api.slack.com/apps).
 
@@ -24,6 +26,6 @@ Follow the steps below to get the bot up and running:
 11. In order to respond to RTM message events, `echobot` requires the `BOT_ID` environment variable to be set. Any messages received before the `BOT_ID` is configured will be dumped in the logs, so mention the bot and check your log output to obtain the bot's ID.
 12. Set the bot's ID as an environment variable.
 
-You're done! The bot is now installed to your workplace and capable of responding to any mentions from channels you invite it to. Build on/change the existing response logic to create your own personal interactive message flow. 
+You're done! The bot is now installed to your workplace and capable of responding to any mentions from channels you invite it to.
 
 If you need to persist data between requests, consider using a simple key-value cache such as https://github.com/patrickmn/go-cache and using the message timestamp as a key.
