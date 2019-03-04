@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 
 	"github.com/nlopes/slack"
@@ -12,6 +13,7 @@ func callback(w http.ResponseWriter, r *http.Request) {
 
 	verifiedBody, err := verifyCallbackMsg(r)
 	if err != nil {
+		log.Printf("failed to verify callback message: %s", err)
 		return
 	}
 
@@ -45,6 +47,7 @@ func help(w http.ResponseWriter, r *http.Request) {
 
 	_, err := verifySlashCommand(r)
 	if err != nil {
+		log.Printf("failed to verify slash command: %s", err)
 		return
 	}
 

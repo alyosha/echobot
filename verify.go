@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"io"
-	"log"
 	"net/http"
 	"net/url"
 
@@ -13,7 +12,6 @@ import (
 
 func verifyCallbackMsg(r *http.Request) (verifiedBody *slack.AttachmentActionCallback, err error) {
 	if r.Method != http.MethodPost {
-		log.Printf("invalid method: %s, want POST", r.Method)
 		return nil, err
 	}
 
@@ -24,13 +22,11 @@ func verifyCallbackMsg(r *http.Request) (verifiedBody *slack.AttachmentActionCal
 
 	jsonBody, err := url.QueryUnescape(buf.String()[8:])
 	if err != nil {
-		log.Printf("error unescaping request body: %s", err)
 		return
 	}
 
 	var msg *slack.AttachmentActionCallback
 	if err := json.Unmarshal([]byte(jsonBody), &msg); err != nil {
-		log.Printf("error decoding JSON message from Slack: %s", err)
 		return nil, err
 	}
 
@@ -39,7 +35,6 @@ func verifyCallbackMsg(r *http.Request) (verifiedBody *slack.AttachmentActionCal
 
 func verifySlashCommand(r *http.Request) (verifiedBody *slack.SlashCommand, err error) {
 	if r.Method != http.MethodPost {
-		log.Printf("invalid method: %s, want POST", r.Method)
 		return nil, err
 	}
 
@@ -50,7 +45,6 @@ func verifySlashCommand(r *http.Request) (verifiedBody *slack.SlashCommand, err 
 
 	body, err := url.ParseQuery(string(buf.String()))
 	if err != nil {
-		log.Printf("error parsing query body: %s", err)
 		return nil, err
 	}
 
@@ -63,24 +57,20 @@ func checkSecretAndWriteBody(r *http.Request) (bytes.Buffer, error) {
 	var buf bytes.Buffer
 	signingSecret, err := getSigningSecret(r.Context())
 	if err != nil {
-		log.Printf("failed to extract signing secret from context %s", err)
 		return buf, err
 	}
 
 	sv, err := slack.NewSecretsVerifier(r.Header, signingSecret)
 	if err != nil {
-		log.Printf("error initializing new SecretsVerifier: %s", err)
 		return buf, err
 	}
 
 	dest := io.MultiWriter(&buf, &sv)
 	if _, err := io.Copy(dest, r.Body); err != nil {
-		log.Printf("error writing body to SecretsVerifier: %s", err)
 		return buf, err
 	}
 
 	if err := sv.Ensure(); err != nil {
-		log.Printf("invalid signing secret: %s", err)
 		return buf, err
 	}
 
