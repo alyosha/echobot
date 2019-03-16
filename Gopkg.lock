@@ -2,12 +2,20 @@
 
 
 [[projects]]
-  digest = "1:b8d8afedc1ea9028d6b8a037a61acaf5bac8ffb1ceb4b285a0af6654bfc62f16"
+  branch = "master"
+  digest = "1:05e16754068d44d7d2ef7714782675046348df06890b3eee8b9f4aefa7715656"
+  name = "github.com/alyosha/slack-utils"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "4218471721ea23c8b755fb37edf4bcb74fe4694f"
+
+[[projects]]
+  digest = "1:1c70b4d7285f792bd387c1adac08825715147fa210b3d2826ffd2bf56be9455b"
   name = "github.com/go-chi/chi"
   packages = ["."]
   pruneopts = "UT"
-  revision = "1a6bb108ccf279c8dac6f9bad857d773b4f9b421"
-  version = "v4.0.1"
+  revision = "da24bba8dcd4021cafac38724bf10dccc97c3e36"
+  version = "v4.0.2"
 
 [[projects]]
   digest = "1:7b5c6e2eeaa9ae5907c391a91c132abfd5c9e8a784a341b5625e750c67e6825d"
@@ -26,15 +34,15 @@
   version = "v1.3.0"
 
 [[projects]]
-  digest = "1:7711bc85fa91b919713feda232ffe0bd4ebb0e8426b9c0de6c6f476e0eb9b7c2"
+  branch = "master"
+  digest = "1:bce2e04677f0d9731bf0bcc7ae61657c653cbb4e1d0cd8ca41af1baa8e3251ac"
   name = "github.com/nlopes/slack"
   packages = [
     ".",
     "slackutilsx",
   ]
   pruneopts = "UT"
-  revision = "a7deeca7935c178aa865249bab511daf816288ba"
-  version = "v0.5.0"
+  revision = "71a00675abf36a35bb4ff7c0fdd3172c9b191b23"
 
 [[projects]]
   digest = "1:cf31692c14422fa27c83a05292eb5cbe0fb2775972e8f1f8446a71549bd8980b"
@@ -44,14 +52,22 @@
   revision = "ba968bfe8b2f7e042a574c888954fccecfa385b4"
   version = "v0.8.1"
 
+[[projects]]
+  branch = "master"
+  digest = "1:b521f10a2d8fa85c04a8ef4e62f2d1e14d303599a55d64dabf9f5a02f84d35eb"
+  name = "golang.org/x/sync"
+  packages = ["errgroup"]
+  pruneopts = "UT"
+  revision = "e225da77a7e68af35c70ccbf71af2b83e6acac3c"
+
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
   input-imports = [
+    "github.com/alyosha/slack-utils",
     "github.com/go-chi/chi",
     "github.com/kelseyhightower/envconfig",
     "github.com/nlopes/slack",
-    "github.com/pkg/errors",
   ]
   solver-name = "gps-cdcl"
   solver-version = 1

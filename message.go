@@ -1,6 +1,9 @@
 package main
 
-import "github.com/nlopes/slack"
+import (
+	"github.com/alyosha/slack-utils"
+	"github.com/nlopes/slack"
+)
 
 const (
 	postSelectUserAttachText = "Okay, need at least one more participant!"
@@ -11,14 +14,9 @@ const (
 	cancelAction             = "cancel"
 )
 
-type message struct {
-	attachments []slack.Attachment
-	body        string
-}
-
 // Sample response message featuring two interactive actions
-var startMsg = message{
-	attachments: []slack.Attachment{
+var startMsg = utils.Msg{
+	Attachments: []slack.Attachment{
 		{
 			Text:       "Who will be participating?",
 			Color:      "#f9a41b",
@@ -38,7 +36,7 @@ var startMsg = message{
 			},
 		},
 	},
-	body: "Let's get started!",
+	Body: "Let's get started!",
 }
 
 var selectActions = []slack.AttachmentAction{
