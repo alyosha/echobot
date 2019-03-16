@@ -27,8 +27,7 @@ func _main() int {
 
 	var env config
 	if err := envconfig.Process("", &env); err != nil {
-		log.Printf("error processing environment variables: %s", err)
-		return 1
+		log.Fatalf("error processing environment variables: %s", err)
 	}
 
 	slackClient := slack.New(env.BotToken)
@@ -54,8 +53,7 @@ func _main() int {
 
 	log.Printf("server listening on :%s", env.Port)
 	if err := http.ListenAndServe(":"+env.Port, r); err != nil {
-		log.Printf("error: %s", err)
-		return 1
+		log.Fatalf("error: %s", err)
 	}
 
 	return 0
