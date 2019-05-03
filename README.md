@@ -16,7 +16,7 @@ Follow the steps below to get the bot up and running:
 1. After you've cloned the app, visit the Slack API dashboard and select `Create New App`.
 2. Once the app is created, jump inside and select `Add features and functionality`.
 3. Select `Interactive Components` and turn on interactivity for your app.
-4. You will be prompted for a request URL: this is the API endpoint to which Slack will forward any callback messages your bot receives. While in the development process I highly recommend using [ngrok](https://ngrok.com/https://ngrok.com/). Once you have your URL, append `/callback` and input it on the `Interactive Components` page.
+4. You will be prompted for a request URL: this is the API endpoint to which Slack will forward any callback messages your bot receives. While in the development process I highly recommend using [ngrok](https://ngrok.com/). Once you have your URL, append `/callback` and input it on the `Interactive Components` page.
 5. Next, select `Bot Users` from the sidebar and add a bot user to your app.
 6. Visit the `Oauth & Permissions` tab and install the app to your workspace. This will generate access tokens for both you and the bot user.
 7. Obtain your signing secret from the `Basic Information` tab and set it as an environment variable (required).
