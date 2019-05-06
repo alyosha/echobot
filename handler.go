@@ -14,8 +14,7 @@ func callback(w http.ResponseWriter, r *http.Request) {
 
 	verifiedBody, err := utils.VerifyCallbackMsg(r)
 	if err != nil {
-		log.Printf("failed to verify callback message: %s", err)
-		return
+		log.Fatalf("failed to verify callback message: %s", err)
 	}
 
 	msg, callbackID := verifiedBody.OriginalMessage, verifiedBody.CallbackID
@@ -48,8 +47,7 @@ func help(w http.ResponseWriter, r *http.Request) {
 
 	_, err := utils.VerifySlashCmd(r)
 	if err != nil {
-		log.Printf("failed to verify slash command: %s", err)
-		return
+		log.Fatalf("failed to verify slash command: %s", err)
 	}
 
 	respMsg.Text = "Set up a help message for users at this endpoint"
