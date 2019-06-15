@@ -27,7 +27,7 @@ Follow the steps below to get the bot up and running:
 
 You're done! The bot is now installed to your workplace and capable of responding to any mentions from channels you invite it to.
 
-# Deployment
+## Deployment
 The project includes a basic deploy script for use with Google's App Engine.
 You will need to have the [gcloud CLI](https://cloud.google.com/sdk/gcloud/) 
 installed to utilize this locally, otherwise you can deploy via the [cloud shell](https://cloud.google.com/shell/docs/).
