@@ -9,8 +9,7 @@ In my projects I always configure help flows via slash command. I find that slas
 Read more about interactive messages [here](https://api.slack.com/interactive-messages).
 
 
-# Setup
-
+## Setup
 Follow the steps below to get the bot up and running: 
 
 1. After you've cloned the app, visit the Slack API dashboard and select `Create New App`.
@@ -28,4 +27,11 @@ Follow the steps below to get the bot up and running:
 
 You're done! The bot is now installed to your workplace and capable of responding to any mentions from channels you invite it to.
 
-If you need to persist data between requests, consider using a simple key-value cache such as https://github.com/patrickmn/go-cache and using the message timestamp as a key.
+# Deployment
+The project includes a basic deploy script for use with Google's App Engine.
+You will need to have the [gcloud CLI](https://cloud.google.com/sdk/gcloud/) 
+installed to utilize this locally, otherwise you can deploy via the [cloud shell](https://cloud.google.com/shell/docs/).
+
+By default, the app will be deployed to the GCP project specified via `gcloud config set core/project PROJECT`. 
+
+You can confirm your current project by running the following command: `gcloud config get-value project` 
