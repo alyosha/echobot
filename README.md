@@ -1,12 +1,12 @@
 # echobot
 
-A basic example of how Slack's interactive messaging works, this skeleton app responds to self-mentions with a message containing an interactive menu and button. Out of the box it simply allows users to select "participants" for a fictional event, and there is no validation to ensure a member is not selected more than once, etc.
+A basic example of interactive message flows in Slack, this skeleton app responds to self-mentions with an action block containing a select menu and button. Out of the box, it simply allows users to select/deselect members from their workspace.
 
 The purpose of this repo is to reduce boilerplate when starting up a new Slackbot project. Build on/change the existing response logic to create your own personal interactive message flow. 
 
 In my projects I always configure help flows via slash command. I find that slash commands are more helpful than RTM in this regard in that, if the user forgets the help command itself, they can easily remind themselves by looking at the bot's profile page. `echobot` comes with a pre-configured `help` endpoint which can be used after setting up a new slash command on the [Slack API dashboard](https://api.slack.com/apps).
 
-Read more about interactive messages [here](https://api.slack.com/interactive-messages).
+Blocks are Slack's replacement for the [now-deprecated](https://api.slack.com/messaging/attachments-to-blocks) message attachments. Read more about them [here](https://api.slack.com/reference/messaging/blocks).
 
 
 ## Setup

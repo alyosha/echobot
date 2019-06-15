@@ -2,15 +2,18 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"strings"
 
 	utils "github.com/alyosha/slack-utils"
 	"github.com/nlopes/slack"
+	"github.com/patrickmn/go-cache"
+	"go.uber.org/zap"
 )
 
 type listener struct {
 	client *slack.Client
+	cache  *cache.Cache
+	logger *zap.Logger
 	botID  string
 }
 
@@ -24,8 +27,9 @@ func (l *listener) listen() {
 		switch event := msg.Data.(type) {
 		case *slack.MessageEvent:
 			if l.isBotImperative(event) {
-				if _, err := utils.PostMsg(l.client, startMsg, event.Channel); err != nil {
-					log.Printf("problem handling message event: %s", err)
+				l.cache.Set(event.User, request{}, cache.DefaultExpiration)
+				if _, _, err := utils.PostMsg(l.client, startMsg, event.Channel); err != nil {
+					l.logger.Error("failed to handle message event", zap.Error(err))
 				}
 			}
 		}
@@ -34,7 +38,7 @@ func (l *listener) listen() {
 
 func (l *listener) isBotImperative(event *slack.MessageEvent) bool {
 	if l.botID == "" {
-		log.Printf("received the following message: %s", event.Msg.Text)
+		l.logger.Info("received message but BotID not set", zap.String("content", event.Msg.Text))
 		return false
 	}
 
