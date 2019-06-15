@@ -1,63 +1,72 @@
 package main
 
 import (
-	"github.com/alyosha/slack-utils"
+	"bytes"
+	"fmt"
+
+	utils "github.com/alyosha/slack-utils"
 	"github.com/nlopes/slack"
 )
 
 const (
-	postSelectUserAttachText = "Okay, need at least one more participant!"
-	requestCancelledText     = "Request cancelled!"
-	userInputID              = "user_input"
-	selectAction             = "select"
-	additionalUserAction     = "additional_user"
-	cancelAction             = "cancel"
+	selectBlockID     = "select_block"
+	reqExpiredBlockID = "req_expired_block"
+	selectActionID    = "select"
 )
 
-// Sample response message featuring two interactive actions
-var startMsg = utils.Msg{
-	Attachments: []slack.Attachment{
-		{
-			Text:       "Who will be participating?",
-			Color:      "#f9a41b",
-			CallbackID: userInputID,
-			Actions: []slack.AttachmentAction{
-				{
-					Name:       selectAction,
-					Type:       "select",
-					DataSource: "users",
-				},
-				{
-					Name:  cancelAction,
-					Text:  "Cancel",
-					Type:  "button",
-					Style: "danger",
-				},
-			},
-		},
-	},
-	Body: "Let's get started!",
-}
+var (
+	selectTxt       = slack.NewTextBlockObject(slack.PlainTextType, "Select", false, false)
+	selectElem      = slack.NewOptionsSelectBlockElement(slack.OptTypeUser, selectTxt, selectActionID)
+	startTxt        = slack.NewTextBlockObject(slack.PlainTextType, "Choose a member to get started", false, false)
+	noUsersTxt      = slack.NewTextBlockObject(slack.MarkdownType, "*No users currently selected*", false, false)
+	reqExpiredTxt   = slack.NewTextBlockObject(slack.PlainTextType, "It looks like your request has expired", false, false)
+	reqCancelledTxt = slack.NewTextBlockObject(slack.PlainTextType, "Request cancelled", false, false)
 
-var selectActions = []slack.AttachmentAction{
-	{
-		Name:       additionalUserAction,
-		Type:       "select",
-		DataSource: "users",
-	},
-	{
-		Name:  cancelAction,
-		Text:  "Cancel",
-		Type:  "button",
-		Style: "danger",
-	},
-}
+	startSectionBlock        = slack.NewSectionBlock(startTxt, nil, nil)
+	selectActionBlock        = slack.NewActionBlock(selectBlockID, selectElem, utils.CancelBtn)
+	noUsersSectionBlock      = slack.NewSectionBlock(noUsersTxt, nil, nil)
+	reqExpiredSectionBlock   = slack.NewSectionBlock(reqExpiredTxt, nil, nil)
+	reqExpiredActionBlock    = slack.NewActionBlock(reqExpiredBlockID, utils.AckBtn)
+	reqCancelledSectionBlock = slack.NewSectionBlock(reqCancelledTxt, nil, nil)
 
-func fmtActionMsgResp(originalMsg slack.Message, msgText string, attachText string, actions []slack.AttachmentAction) slack.Message {
-	originalMsg.ReplaceOriginal = true
-	originalMsg.Text = msgText
-	originalMsg.Attachments[0].Text = attachText
-	originalMsg.Attachments[0].Actions = actions
+	startMsg = utils.Msg{
+		Blocks: []slack.Block{startSectionBlock, selectActionBlock},
+	}
+	reqExpiredMsg = utils.Msg{
+		Blocks: []slack.Block{reqExpiredSectionBlock},
+	}
+	reqCancelledMsg = utils.Msg{
+		Blocks: []slack.Block{reqCancelledSectionBlock},
+	}
+)
 
-	return originalMsg
+func fmtRespMsg(req request) utils.Msg {
+	userCount := len(req.users)
+
+	if userCount == 0 {
+		return utils.Msg{
+			Blocks: []slack.Block{noUsersSectionBlock, selectActionBlock},
+		}
+	}
+
+	var buf bytes.Buffer
+	buf.WriteString("Selected users: ")
+	for i, user := range req.users {
+		buf.WriteString(fmt.Sprintf("<@%s>", user))
+		if i+1 != userCount {
+			buf.WriteString(",")
+		}
+	}
+
+	respTxt := slack.NewTextBlockObject(
+		slack.MarkdownType,
+		fmt.Sprintf("Current user count: *%d*\n%s", userCount, buf.String()),
+		false,
+		false,
+	)
+	respSectionBlock := slack.NewSectionBlock(respTxt, nil, nil)
+
+	return utils.Msg{
+		Blocks: []slack.Block{respSectionBlock, selectActionBlock},
+	}
 }
