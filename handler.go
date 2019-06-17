@@ -26,6 +26,8 @@ func (h *handler) callback(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// We only have BlockAction callbacks in this application, so there is no risk of
+	// index out of range here. In larger projects, implement a switch on callback type.
 	action := callback.ActionCallback.BlockActions[0]
 
 	switch action.ActionID {
