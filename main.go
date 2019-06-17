@@ -75,12 +75,11 @@ func _main() int {
 		r.Post("/help", h.help)
 	})
 
+	logger.Info("server listening", zap.String("port", env.Port))
 	if err := http.ListenAndServe(":"+env.Port, r); err != nil {
 		logger.Error("failed to start http server", zap.Error(err))
 		return exitError
 	}
-
-	logger.Info("server listening", zap.String("port", env.Port))
 
 	return exitOK
 }
