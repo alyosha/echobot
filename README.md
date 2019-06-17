@@ -21,6 +21,9 @@ Follow the steps below to get the bot up and running:
 7. Obtain your signing secret from the `Basic Information` tab and set it as an environment variable (required).
 8. Obtain your bot's access token from the `Oauth & Permissions` page and set it as an environment variable (required).
 9. Build the binary and start your server.
+    - This project uses modules, which were first introduced in Go `1.11`. Use
+   of modules is optional in `1.11`, so if you are working within your `GOPATH`
+you will need to enable the use of modules by running: `export GO111MODULE=on`
 10. Try to mention the bot in a channel of your choice and invite them to join when prompted.
 11. In order to respond to RTM message events, `echobot` requires the `BOT_ID` environment variable to be set. Any messages received before the `BOT_ID` is configured will be dumped in the logs, so mention the bot and check your log output to obtain the bot's ID.
 12. Set the bot's ID as an environment variable.
