@@ -17,7 +17,7 @@ type listener struct {
 	botID  string
 }
 
-// listen waits for message events
+// listen waits for new message events in any channels the bot has been invited to
 func (l *listener) listen() {
 	rtm := l.client.NewRTM()
 
@@ -36,6 +36,7 @@ func (l *listener) listen() {
 	}
 }
 
+// Only respond if the message begins with the bot's name
 func (l *listener) isBotImperative(event *slack.MessageEvent) bool {
 	if l.botID == "" {
 		l.logger.Info("received message but BotID not set", zap.String("content", event.Msg.Text))
