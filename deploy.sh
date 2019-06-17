@@ -1,6 +1,7 @@
 echo "runtime: go111
 instance_class: F1
 env_variables:
+  PORT: '$PORT'
   SIGNING_SECRET: '$SIGNING_SECRET'
   BOT_TOKEN: '$BOT_TOKEN'
   CACHE_DEFAULT_EXPIRATION: '$CACHE_DEFAULT_EXPIRATION'
