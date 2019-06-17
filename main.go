@@ -20,10 +20,12 @@ const (
 )
 
 type config struct {
-	Port          string `envconfig:"PORT" default:"3000"`
-	SigningSecret string `envconfig:"SIGNING_SECRET" required:"true"`
-	BotToken      string `envconfig:"BOT_TOKEN" required:"true"`
-	BotID         string `envconfig:"BOT_ID"`
+	Port                   string        `envconfig:"PORT" default:"3000"`
+	SigningSecret          string        `envconfig:"SIGNING_SECRET" required:"true"`
+	BotToken               string        `envconfig:"BOT_TOKEN" required:"true"`
+	BotID                  string        `envconfig:"BOT_ID"`
+	CacheDefaultExpiration time.Duration `envconfig:"CACHE_DEFAULT_EXPIRATION" default:"15m"`
+	CacheCleanupInterval   time.Duration `envconfig:"CACHE_CLEANUP_INTERVAL" default:"30m"`
 }
 
 func main() {
@@ -46,7 +48,7 @@ func _main() int {
 	}
 
 	client := slack.New(env.BotToken)
-	cache := cache.New(15*time.Minute, 30*time.Minute)
+	cache := cache.New(env.CacheDefaultExpiration, env.CacheCleanupInterval)
 
 	l := listener{
 		client: client,
