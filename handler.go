@@ -19,6 +19,19 @@ type request struct {
 	users []string
 }
 
+func (h *handler) addUsers(w http.ResponseWriter, r *http.Request) {
+	cmd, err := utils.VerifySlashCmd(r)
+	if err != nil {
+		h.logger.Error("failed to verify slash command", zap.Error(err))
+		return
+	}
+
+	h.cache.Set(cmd.UserID, request{}, cache.DefaultExpiration)
+	if _, _, err := utils.PostMsg(h.client, startMsg, cmd.ChannelID); err != nil {
+		h.logger.Error("failed to handle message event", zap.Error(err))
+	}
+}
+
 func (h *handler) callback(w http.ResponseWriter, r *http.Request) {
 	callback, err := utils.VerifyCallbackMsg(r)
 	if err != nil {

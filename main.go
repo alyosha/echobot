@@ -50,19 +50,11 @@ func _main() int {
 	client := slack.New(env.BotToken)
 	cache := cache.New(env.CacheDefaultExpiration, env.CacheCleanupInterval)
 
-	l := listener{
-		client: client,
-		cache:  cache,
-		logger: logger,
-		botID:  env.BotID,
-	}
 	h := handler{
 		client: client,
 		cache:  cache,
 		logger: logger,
 	}
-
-	go l.listen()
 
 	r := chi.NewRouter()
 	r.Use(func(h http.Handler) http.Handler {
@@ -73,6 +65,7 @@ func _main() int {
 	})
 
 	r.Route("/", func(r chi.Router) {
+		r.Post("/add-users", h.addUsers)
 		r.Post("/callback", h.callback)
 		r.Post("/help", h.help)
 	})
