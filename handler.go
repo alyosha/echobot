@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
 
 	utils "github.com/alyosha/slack-utils"
@@ -17,6 +18,19 @@ type handler struct {
 
 type request struct {
 	users []string
+}
+
+func (h *handler) addUsers(w http.ResponseWriter, r *http.Request) {
+	cmd, err := utils.VerifySlashCmd(r)
+	if err != nil {
+		h.logger.Error("failed to verify slash command", zap.Error(err))
+		return
+	}
+
+	h.cache.Set(cmd.UserID, request{}, cache.DefaultExpiration)
+	if _, _, err := utils.PostMsg(h.client, startMsg, cmd.ChannelID); err != nil {
+		h.logger.Error("failed to handle message event", zap.Error(err))
+	}
 }
 
 func (h *handler) callback(w http.ResponseWriter, r *http.Request) {
@@ -66,6 +80,10 @@ func (h *handler) help(w http.ResponseWriter, r *http.Request) {
 	respMsg.Text = "Set up a help message for users at this endpoint"
 
 	utils.SendResp(w, respMsg)
+}
+
+func (h *handler) ping(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprint(w, "Bot is alive")
 }
 
 func (h *handler) updateMsg(channelID, timestamp string, msg utils.Msg) error {
