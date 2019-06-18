@@ -1,10 +1,8 @@
 # echobot
 
-A basic example of interactive message flows in Slack, this skeleton app responds to self-mentions with an action block containing a select menu and button. Out of the box, it simply allows users to select/deselect members from their workspace.
+A basic example of interactive message flows in Slack, this skeleton app responds to a slash command invocation with an action block containing a select menu and button. Out of the box, it simply allows users to select/deselect members from their workspace.
 
 The purpose of this repo is to reduce boilerplate when starting up a new Slackbot project. Build on/change the existing response logic to create your own personal interactive message flow. 
-
-In my projects I always configure help flows via slash command. I find that slash commands are more helpful than RTM in this regard in that, if the user forgets the help command itself, they can easily remind themselves by looking at the bot's profile page. `echobot` comes with a pre-configured `help` endpoint which can be used after setting up a new slash command on the [Slack API dashboard](https://api.slack.com/apps).
 
 Blocks are Slack's replacement for the [now-deprecated](https://api.slack.com/messaging/attachments-to-blocks) message attachments. Read more about them [here](https://api.slack.com/reference/messaging/blocks).
 
@@ -16,19 +14,18 @@ Follow the steps below to get the bot up and running:
 2. Once the app is created, jump inside and select `Add features and functionality`.
 3. Select `Interactive Components` and turn on interactivity for your app.
 4. You will be prompted for a request URL: this is the API endpoint to which Slack will forward any callback messages your bot receives. While in the development process I highly recommend using [ngrok](https://ngrok.com/). Once you have your URL, append `/callback` and input it on the `Interactive Components` page.
-5. Next, select `Bot Users` from the sidebar and add a bot user to your app.
-6. Visit the `Oauth & Permissions` tab and install the app to your workspace. This will generate access tokens for both you and the bot user.
-7. Obtain your signing secret from the `Basic Information` tab and set it as an environment variable (required).
-8. Obtain your bot's access token from the `Oauth & Permissions` page and set it as an environment variable (required).
-9. Build the binary and start your server.
+5. Setup two slash commands for the `/add-users` and `/help` endpoints from the
+   Slash Commands tab of the dashboard
+6. Next, select `Bot Users` from the sidebar and add a bot user to your app.
+7. Visit the `Oauth & Permissions` tab and install the app to your workspace. This will generate access tokens for both you and the bot user.
+8. Obtain your signing secret from the `Basic Information` tab and set it as an environment variable (required).
+9. Obtain your bot's access token from the `Oauth & Permissions` page and set it as an environment variable (required).
+10. Build the binary and start your server.
     - This project uses modules, which were first introduced in Go `1.11`. Use
    of modules is optional in `1.11`, so if you are working within your `GOPATH`
 you will need to enable the use of modules by running: `export GO111MODULE=on`
-10. Try to mention the bot in a channel of your choice and invite them to join when prompted.
-11. In order to respond to RTM message events, `echobot` requires the `BOT_ID` environment variable to be set. Any messages received before the `BOT_ID` is configured will be dumped in the logs, so mention the bot and check your log output to obtain the bot's ID.
-12. Set the bot's ID as an environment variable.
 
-You're done! The bot is now installed to your workplace and capable of responding to any mentions from channels you invite it to.
+You're done! The bot is now installed to your workplace and capable of responding to the registered slash commands from any channels you invite it to.
 
 ## Deployment
 The project includes a basic deploy script for use with Google's App Engine.

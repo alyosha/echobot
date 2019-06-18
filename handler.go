@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
 
 	utils "github.com/alyosha/slack-utils"
@@ -79,6 +80,10 @@ func (h *handler) help(w http.ResponseWriter, r *http.Request) {
 	respMsg.Text = "Set up a help message for users at this endpoint"
 
 	utils.SendResp(w, respMsg)
+}
+
+func (h *handler) ping(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprint(w, "Bot is alive")
 }
 
 func (h *handler) updateMsg(channelID, timestamp string, msg utils.Msg) error {

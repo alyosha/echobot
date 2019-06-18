@@ -23,7 +23,6 @@ type config struct {
 	Port                   string        `envconfig:"PORT" default:"3000"`
 	SigningSecret          string        `envconfig:"SIGNING_SECRET" required:"true"`
 	BotToken               string        `envconfig:"BOT_TOKEN" required:"true"`
-	BotID                  string        `envconfig:"BOT_ID"`
 	CacheDefaultExpiration time.Duration `envconfig:"CACHE_DEFAULT_EXPIRATION" default:"15m"`
 	CacheCleanupInterval   time.Duration `envconfig:"CACHE_CLEANUP_INTERVAL" default:"30m"`
 }
@@ -68,6 +67,7 @@ func _main() int {
 		r.Post("/add-users", h.addUsers)
 		r.Post("/callback", h.callback)
 		r.Post("/help", h.help)
+		r.HandleFunc("/", h.ping)
 	})
 
 	logger.Info("server listening", zap.String("port", env.Port))
