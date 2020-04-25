@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	utils "github.com/alyosha/slack-utils"
-	"github.com/nlopes/slack"
+	"github.com/slack-go/slack"
 )
 
 const (
@@ -26,7 +26,7 @@ var (
 	selectActionBlock        = slack.NewActionBlock(selectBlockID, selectElem, utils.CancelBtn)
 	noUsersSectionBlock      = slack.NewSectionBlock(noUsersTxt, nil, nil)
 	reqExpiredSectionBlock   = slack.NewSectionBlock(reqExpiredTxt, nil, nil)
-	reqExpiredActionBlock    = slack.NewActionBlock(reqExpiredBlockID, utils.AckBtn)
+	reqExpiredActionBlock    = slack.NewActionBlock(reqExpiredBlockID, utils.DoneBtn)
 	reqCancelledSectionBlock = slack.NewSectionBlock(reqCancelledTxt, nil, nil)
 
 	startMsg = utils.Msg{

@@ -5,8 +5,8 @@ import (
 	"net/http"
 
 	utils "github.com/alyosha/slack-utils"
-	"github.com/nlopes/slack"
 	"github.com/patrickmn/go-cache"
+	"github.com/slack-go/slack"
 	"go.uber.org/zap"
 )
 
@@ -28,7 +28,7 @@ func (h *handler) addUsers(w http.ResponseWriter, r *http.Request) {
 	}
 
 	h.cache.Set(cmd.UserID, request{}, cache.DefaultExpiration)
-	if _, _, err := utils.PostMsg(h.client, startMsg, cmd.ChannelID); err != nil {
+	if _, err := utils.PostMsg(h.client, startMsg, cmd.ChannelID); err != nil {
 		h.logger.Error("failed to handle message event", zap.Error(err))
 	}
 }
@@ -47,20 +47,20 @@ func (h *handler) callback(w http.ResponseWriter, r *http.Request) {
 	switch action.ActionID {
 	case utils.CancelActionID:
 		h.cache.Delete(callback.User.ID)
-		if err := h.updateMsg(callback.Channel.ID, callback.Message.Timestamp, reqCancelledMsg); err != nil {
+		if err := utils.UpdateMsg(h.client, reqCancelledMsg, callback.Channel.ID, callback.Message.Timestamp); err != nil {
 			h.logger.Error("failed to send request cancelled message", zap.Error(err))
 		}
 	case selectActionID:
 		entry, found := h.cache.Get(callback.User.ID)
 		if !found {
-			if err := h.updateMsg(callback.Channel.ID, callback.Message.Timestamp, reqExpiredMsg); err != nil {
+			if err := utils.UpdateMsg(h.client, reqExpiredMsg, callback.Channel.ID, callback.Message.Timestamp); err != nil {
 				h.logger.Error("failed to send request expired message", zap.Error(err))
 			}
 			return
 		}
 		req := entry.(request)
 		req.users = getUpdatedUsers(req.users, action.SelectedUser)
-		if err := h.updateMsg(callback.Channel.ID, callback.Message.Timestamp, fmtRespMsg(req)); err != nil {
+		if err := utils.UpdateMsg(h.client, fmtRespMsg(req), callback.Channel.ID, callback.Message.Timestamp); err != nil {
 			h.logger.Error("failed to update message", zap.Error(err))
 			return
 		}
@@ -84,16 +84,6 @@ func (h *handler) help(w http.ResponseWriter, r *http.Request) {
 
 func (h *handler) ping(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprint(w, "Bot is alive")
-}
-
-func (h *handler) updateMsg(channelID, timestamp string, msg utils.Msg) error {
-	_, _, _, err := utils.UpdateMsg(
-		h.client,
-		msg,
-		channelID,
-		timestamp,
-	)
-	return err
 }
 
 func getUpdatedUsers(existingUsers []string, newUser string) []string {

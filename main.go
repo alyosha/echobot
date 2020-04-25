@@ -9,8 +9,8 @@ import (
 	utils "github.com/alyosha/slack-utils"
 	"github.com/go-chi/chi"
 	"github.com/kelseyhightower/envconfig"
-	"github.com/nlopes/slack"
 	"github.com/patrickmn/go-cache"
+	"github.com/slack-go/slack"
 	"go.uber.org/zap"
 )
 
